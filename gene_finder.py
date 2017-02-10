@@ -2,7 +2,7 @@
 """
 YOUR HEADER COMMENT HERE
 
-@author: YOUR NAME HERE
+@author: Christina Gee
 
 """
 
@@ -31,7 +31,14 @@ def get_complement(nucleotide):
     'G'
     """
     # TODO: implement this
-    pass
+    if (nucleotide == "A"):
+        return 'T'
+    if (nucleotide == 'T'):
+        return 'A'
+    if (nucleotide == 'C'):
+        return 'G'
+    if (nucleotide == 'G'):
+        return 'C'
 
 
 def get_reverse_complement(dna):
@@ -46,7 +53,11 @@ def get_reverse_complement(dna):
     'TGAACGCGG'
     """
     # TODO: implement this
-    pass
+    newDNA = ''
+    for nucleo in dna:
+        newNucleo = get_complement(nucleo)
+        newDNA = newDNA + newNucleo
+    return newDNA [: :-1] #-1 is used to go backwards
 
 
 def rest_of_ORF(dna):
@@ -62,8 +73,23 @@ def rest_of_ORF(dna):
     >>> rest_of_ORF("ATGAGATAGG")
     'ATGAGA'
     """
-    # TODO: implement this
-    pass
+
+    ORF=''
+    i=0
+    while (i<len(dna)):
+        if dna[i:i+3] == "TAG" or dna[i:i+3] == "TAA" or dna[i:i+3] == "TGA":
+            return dna[:i]
+        else:
+            i=i+3
+
+    # x = 1
+    # for i in dna: #for every letter in the DNA
+    #     ORF = ORF + i #the letter is going to be added to the variable codon
+    #     if len(ORF)== (3 * x):
+    #         if ORF[-3:] == "TAA" or ORF[-3:]=="TAG" or ORF[-3:]=="TGA":
+    #             return dna[ : len(ORF)-3] #[Start:End:Steps]
+    #         x = x + 1
+
 
 
 def find_all_ORFs_oneframe(dna):
@@ -79,8 +105,45 @@ def find_all_ORFs_oneframe(dna):
     >>> find_all_ORFs_oneframe("ATGCATGAATGTAGATAGATGTGCCC")
     ['ATGCATGAATGTAGA', 'ATGTGCCC']
     """
-    # TODO: implement this
-    pass
+    #
+    # returnList = []
+    # codon = []
+    # index = 0
+    #
+    # while index <= len(dna) - 1:
+    #     codon.append(dna[index])
+    #
+    #     if dna[index] == "T" and index + 2 <= len(dna) - 1:
+    #         if dna[index + 1] == "A":
+    #             if dna[index + 2] == "A" or dna[index + 2] == "G":
+    #                 # print(codon[:-1])
+    #                 returnList.append("".join(codon[:-1]))
+    #                 codon = []
+    #                 index += 2
+    #
+    #         elif dna[index + 1] == "G":
+    #             if dna[index + 2] == "A":
+    #                 # print(codon[:-1])
+    #                 returnList.append("".join(codon[:-1]))
+    #                 codon = []
+    #                 index += 2
+    #
+    #     index += 1
+    #
+    # returnList.append("".join(codon))
+    #
+    # return returnList
+    # ATTEMPT #2
+    i=0
+    newdna=[]
+    while (i<len(dna)): #i is less than the entire strand, i is a number
+        if dna[i:i+3] == "ATG":
+            new_orf = rest_of_ORF(dna[i:])
+            i = i + len(new_orf)
+            newdna.append(new_orf)
+        else:
+            i += 3
+    return newdna
 
 
 def find_all_ORFs(dna):
@@ -96,9 +159,15 @@ def find_all_ORFs(dna):
     >>> find_all_ORFs("ATGCATGAATGTAG")
     ['ATGCATGAATGTAG', 'ATGAATGTAG', 'ATG']
     """
-    # TODO: implement this
-    pass
+    i=0
+    newdna=[]
+    while i<3:
+            newdna = newdna + find_all_ORFs_oneframe (dna[i:])
+            i +=1
+    return newdna
 
+
+#offsets
 
 def find_all_ORFs_both_strands(dna):
     """ Finds all non-nested open reading frames in the given DNA sequence on both
@@ -112,6 +181,13 @@ def find_all_ORFs_both_strands(dna):
     # TODO: implement this
     pass
 
+    i=0
+    reversedna=[]
+    while i<len(dna):
+            reversedna  = find_all_ORFs (dna[i: :-1])    
+    return reversedna
+
+#call fnd_all_ORFs_one frame - forward and backward DNA
 
 def longest_ORF(dna):
     """ Finds the longest ORF on both strands of the specified DNA and returns it
