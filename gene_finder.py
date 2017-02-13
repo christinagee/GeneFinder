@@ -75,13 +75,16 @@ def rest_of_ORF(dna):
     """
 
     ORF=''
-    i=0
-    while (i<len(dna)):
-        if dna[i:i+3] == "TAG" or dna[i:i+3] == "TAA" or dna[i:i+3] == "TGA":
-            return dna[:i]
+    end_codon = False
+    codons= [dna[i:i+3] for i in range (0,len(dna),3)]
+    stop_codons = ["TAG","TAA","TGA"]
+    for codon in codons:
+        if codon in stop_codons:
+            break
         else:
-            i=i+3
+            ORF += codon
 
+    return ORF
     # x = 1
     # for i in dna: #for every letter in the DNA
     #     ORF = ORF + i #the letter is going to be added to the variable codon
@@ -181,11 +184,9 @@ def find_all_ORFs_both_strands(dna):
     # TODO: implement this
     pass
 
-    i=0
-    reversedna=[]
-    while i<len(dna):
-            reversedna  = find_all_ORFs (dna[i: :-1])    
-    return reversedna
+    all_orfs=find_all_ORFs(dna) #finding all ORFs for DNA
+    all_orfs += find_all_ORFs(get_reverse_complement(dna))
+    return all_orfs
 
 #call fnd_all_ORFs_one frame - forward and backward DNA
 
@@ -196,7 +197,9 @@ def longest_ORF(dna):
     'ATGCTACATTCGCAT'
     """
     # TODO: implement this
-    pass
+    all_orfs = find_all_ORFs_both_strands(dna)
+    longest = max(all_orfs,key=len)
+    return longest
 
 
 def longest_ORF_noncoding(dna, num_trials):
@@ -207,7 +210,17 @@ def longest_ORF_noncoding(dna, num_trials):
         num_trials: the number of random shuffles
         returns: the maximum length longest ORF """
     # TODO: implement this
-    pass
+    i=0
+    greatest_length = 0
+    while i < num_trials:
+        shuffle = shuffle_string(dna)
+        longest = longest_ORF(shuffle)
+        if greatest_length < len(longest):
+            greatest_length = len(longest)
+        i += 1
+
+    return greatest_length
+
 
 
 def coding_strand_to_AA(dna):
@@ -225,7 +238,20 @@ def coding_strand_to_AA(dna):
         'MPA'
     """
     # TODO: implement this
-    pass
+    translated_aa = []
+    i=0
+    while i < len(dna):
+        codeon = dna[i:i+3]
+        if len(codeon) == 3:
+            aa = aa_table[codeon]
+            translated_aa += aa
+            i += 3
+        else:
+            break
+    return translated_aa
+
+    #take DNA stran, make it to triplets and translate it to amino acids
+    #look up dictionary values  - data structure for programming
 
 
 def gene_finder(dna):
