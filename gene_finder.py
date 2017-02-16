@@ -11,6 +11,7 @@ from amino_acids import aa, codons, aa_table   # you may find these useful
 from load import load_seq
 
 
+
 def shuffle_string(s):
     """Shuffles the characters in the input string
         NOTE: this is a helper function, you do not
@@ -181,8 +182,6 @@ def find_all_ORFs_both_strands(dna):
     >>> find_all_ORFs_both_strands("ATGCGAATGTAGCATCAAA")
     ['ATGCGAATG', 'ATGCTACATTCGCAT']
     """
-    # TODO: implement this
-    pass
 
     all_orfs=find_all_ORFs(dna) #finding all ORFs for DNA
     all_orfs += find_all_ORFs(get_reverse_complement(dna))
@@ -238,7 +237,7 @@ def coding_strand_to_AA(dna):
         'MPA'
     """
     # TODO: implement this
-    translated_aa = []
+    translated_aa = ""
     i=0
     while i < len(dna):
         codeon = dna[i:i+3]
@@ -261,8 +260,19 @@ def gene_finder(dna):
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
     # TODO: implement this
-    pass
+    threshold = longest_ORF_noncoding(dna, 1500)
+    amino_acid_seq = []
+    all_orfs = find_all_ORFs_both_strands(dna)
+    for orf in all_orfs:
+        if len(orf) >= threshold:
+            seq = coding_strand_to_AA(orf)
+            amino_acid_seq.append(seq)
+
+    return amino_acid_seq
+
 
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+    dna = load_seq("./data/X73525.fa")
+    print(gene_finder(dna))
